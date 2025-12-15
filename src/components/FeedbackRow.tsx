@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Pencil, Trash2, CheckCircle2, X, FileText } from "lucide-react";
+import {
+    Pencil,
+    Trash2,
+    CheckCircle2,
+    X,
+    FileText,
+    AlignLeft,
+    MessageSquare,
+    Lightbulb,
+    GitFork,
+    Tags,
+} from "lucide-react";
 import { toast } from "sonner";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
@@ -8,7 +19,7 @@ import Modal from "./Modal";
 
 interface FeedbackRowProps {
     feedback: FeedbackItem;
-    isOpen: boolean; // Kept for prop compatibility check, but effectively unused in this new layout
+    isOpen: boolean;
     isDeleting?: boolean;
     onToggle: () => void;
     onDelete: (id: string) => void;
@@ -70,7 +81,7 @@ export default function FeedbackRow({
                         <div
                             className={cn(
                                 "shrink-0 w-5 h-5 flex items-center justify-center text-gray-400 transition-transform duration-200",
-                                isOpen && "rotate-180 text-indigo-500"
+                                isOpen && "rotate-180 text-gray-900"
                             )}
                         >
                             <svg
@@ -88,42 +99,17 @@ export default function FeedbackRow({
                             </svg>
                         </div>
                         <div className="flex-1">
-                            <p className="text-sm text-gray-900 font-regular mb-1">
+                            <p className="text-sm text-gray-900 font-medium mb-1 line-clamp-2">
                                 {feedback.feedbackRequestReason ||
                                     feedback.feedbackAttributes
                                         ?.feedback_request_reason ||
                                     feedback.workflowName}
                             </p>
-                            {/* {!isOpen && (
-                                <p className="text-xs text-gray-500 line-clamp-1">
-                                    Click to view details...
-                                </p>
-                            )} */}
                         </div>
                     </div>
                 </td>
 
-                {/* 2. Applicable Criteria/Tags */}
-                <td className="px-6 py-4 align-top py-5">
-                    <div className="flex flex-wrap gap-1.5 max-w-xs">
-                        {validTags.length > 0 ? (
-                            validTags.map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100"
-                                >
-                                    {tag.replace(/_/g, " ")}
-                                </span>
-                            ))
-                        ) : (
-                            <span className="text-xs text-gray-400 italic">
-                                No tags
-                            </span>
-                        )}
-                    </div>
-                </td>
-
-                {/* 3. Status */}
+                {/* 2. Status */}
                 <td className="px-6 py-4 align-top py-5">
                     <span
                         className={cn(
@@ -140,7 +126,7 @@ export default function FeedbackRow({
                     </span>
                 </td>
 
-                {/* 4. Attachments */}
+                {/* 3. Attachments */}
                 <td className="px-6 py-4 align-top py-5">
                     {feedback.file ? (
                         <a
@@ -150,7 +136,7 @@ export default function FeedbackRow({
                             title="Download Excel Report"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 group-hover/file:bg-indigo-100 transition-colors">
+                            <div className="p-2 bg-gray-100 rounded-lg text-gray-600 group-hover/file:bg-indigo-50 group-hover/file:text-indigo-600 transition-colors">
                                 <FileText className="w-4 h-4" />
                             </div>
                             <div className="flex flex-col overflow-hidden">
@@ -158,7 +144,7 @@ export default function FeedbackRow({
                                     feedback-{feedback.sessionId.slice(0, 8)}
                                     .xlsx
                                 </span>
-                                <span className="text-[10px] text-gray-400 group-hover/file:text-indigo-400">
+                                <span className="text-[10px] text-gray-400 group-hover/file:text-indigo-500">
                                     Click to download
                                 </span>
                             </div>
@@ -177,7 +163,7 @@ export default function FeedbackRow({
                             e.stopPropagation();
                             setIsEditModalOpen(true);
                         }}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                        className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
                         title="Edit Feedback"
                     >
                         <Pencil className="w-4 h-4" />
@@ -223,44 +209,111 @@ export default function FeedbackRow({
 
             {/* Expanded Content Row */}
             {isOpen && (
-                <tr className="bg-gray-50/50">
+                <tr className="bg-gray-50/25">
                     <td
-                        colSpan={6}
-                        className="px-6 py-0 border-b border-gray-100"
+                        colSpan={5}
+                        className="px-8 py-0 border-b border-gray-200"
                     >
-                        <div className="py-6 pl-10 pr-4 grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-200">
-                            {/* Feedback Provided */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                                    Feedback Provided
-                                </h4>
-                                <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                        {feedback.feedbackMessage || (
-                                            <span className="text-gray-400 italic">
-                                                No feedback message provided.
-                                            </span>
-                                        )}
+                        <div className="py-8 space-y-8 animate-in slide-in-from-top-1 duration-200">
+                            {/* Full Request Reason */}
+                            <section>
+                                <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                    <AlignLeft className="w-4 h-4" />
+                                    <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                        Full Request Reason
+                                    </h4>
+                                </div>
+                                <div className="bg-white p-4 border border-gray-200 rounded-lg">
+                                    <p className="text-sm text-gray-900 font-medium leading-relaxed">
+                                        {feedback.feedbackRequestReason ||
+                                            feedback.feedbackAttributes
+                                                ?.feedback_request_reason ||
+                                            feedback.workflowName}
                                     </p>
                                 </div>
+                            </section>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Feedback Provided */}
+                                <section className="flex flex-col h-full">
+                                    <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                        <MessageSquare className="w-4 h-4" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                            Feedback Provided
+                                        </h4>
+                                    </div>
+                                    <div className="bg-white p-4 border border-gray-200 rounded-lg flex-1">
+                                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                                            {feedback.feedbackMessage || (
+                                                <span className="text-gray-400 italic">
+                                                    No feedback message
+                                                    provided.
+                                                </span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </section>
+
+                                {/* Rationale */}
+                                <section className="flex flex-col h-full">
+                                    <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                        <Lightbulb className="w-4 h-4" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                            Justification / Rationale
+                                        </h4>
+                                    </div>
+                                    <div className="bg-white p-4 border border-gray-200 rounded-lg flex-1">
+                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                            {feedback.rationale || (
+                                                <span className="text-gray-400 italic">
+                                                    No rationale provided.
+                                                </span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </section>
                             </div>
 
-                            {/* Rationale */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                    Justification / Rationale
-                                </h4>
-                                <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                                    <p className="text-sm text-gray-700 leading-relaxed">
-                                        {feedback.rationale || (
-                                            <span className="text-gray-400 italic">
-                                                No rationale provided.
+                            {/* Additional Info: Workflow & Tags */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-200">
+                                {/* Workflow Name */}
+                                <section>
+                                    <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                        <GitFork className="w-4 h-4" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                            Workflow
+                                        </h4>
+                                    </div>
+                                    <div className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-200">
+                                        {feedback.workflowName}
+                                    </div>
+                                </section>
+
+                                {/* Tags */}
+                                <section>
+                                    <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                        <Tags className="w-4 h-4" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                            Applicable Criteria/Tags
+                                        </h4>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {validTags.length > 0 ? (
+                                            validTags.map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
+                                                >
+                                                    {tag.replace(/_/g, " ")}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-sm text-gray-400 italic">
+                                                No tags associated
                                             </span>
                                         )}
-                                    </p>
-                                </div>
+                                    </div>
+                                </section>
                             </div>
                         </div>
                     </td>

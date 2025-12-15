@@ -108,10 +108,16 @@ export default function FeedbackList() {
         return filteredItems.slice(start, start + itemsPerPage);
     }, [filteredItems, currentPage, itemsPerPage]);
 
-    // Reset pagination when filters change
-    useMemo(() => {
+    // Reset pagination and open state when filters change
+    useEffect(() => {
         setCurrentPage(1);
+        setOpenId(null);
     }, [searchTerm, statusFilter]);
+
+    // Reset open state when page changes
+    useEffect(() => {
+        setOpenId(null);
+    }, [currentPage]);
 
     // --- UI: Loading State ---
     if (isLoading) {
@@ -200,12 +206,6 @@ export default function FeedbackList() {
                                     scope="col"
                                     className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
                                 >
-                                    Applicable Criteria/Tags
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                                >
                                     Status
                                 </th>
                                 <th
@@ -230,25 +230,29 @@ export default function FeedbackList() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {paginatedItems.length > 0 ? (
-                                paginatedItems.map((item) => (
-                                    <FeedbackRow
-                                        key={item.sessionId}
-                                        feedback={item}
-                                        isOpen={openId === item.sessionId}
-                                        isDeleting={deletingIds.has(
-                                            item.sessionId
-                                        )}
-                                        onToggle={() =>
-                                            handleToggle(item.sessionId)
-                                        }
-                                        onDelete={handleDelete}
-                                        onUpdate={handleUpdate}
-                                    />
-                                ))
+                                paginatedItems.map((item, index) => {
+                                    // Use composite key to handle duplicate sessionIds in demo data
+                                    const uniqueId = `${item.sessionId}-${index}`;
+                                    return (
+                                        <FeedbackRow
+                                            key={uniqueId}
+                                            feedback={item}
+                                            isOpen={openId === uniqueId}
+                                            isDeleting={deletingIds.has(
+                                                item.sessionId
+                                            )}
+                                            onToggle={() =>
+                                                handleToggle(uniqueId)
+                                            }
+                                            onDelete={handleDelete}
+                                            onUpdate={handleUpdate}
+                                        />
+                                    );
+                                })
                             ) : (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={5}
                                         className="px-6 py-12 text-center"
                                     >
                                         <div className="flex flex-col items-center justify-center">
