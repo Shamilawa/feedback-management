@@ -66,9 +66,6 @@ export default function FeedbackRow({
         }
     };
 
-    // Extract Tags
-    const validTags = feedback.feedbackAttributes?.tags || [];
-
     return (
         <React.Fragment>
             {/* Main Row Content */}
@@ -106,8 +103,6 @@ export default function FeedbackRow({
                         <div className="flex-1">
                             <p className="text-sm text-gray-900 font-medium mb-1 line-clamp-2">
                                 {feedback.feedbackRequestReason ||
-                                    feedback.feedbackAttributes
-                                        ?.feedback_request_reason ||
                                     feedback.workflowName}
                             </p>
                         </div>
@@ -231,8 +226,6 @@ export default function FeedbackRow({
                                 <div className="bg-white p-4 border border-gray-200 rounded-lg">
                                     <p className="text-sm text-gray-900 font-medium leading-relaxed">
                                         {feedback.feedbackRequestReason ||
-                                            feedback.feedbackAttributes
-                                                ?.feedback_request_reason ||
                                             feedback.workflowName}
                                     </p>
                                 </div>
@@ -303,18 +296,25 @@ export default function FeedbackRow({
                                         </h4>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {validTags.length > 0 ? (
-                                            validTags.map((tag) => (
+                                        {feedback.metadata &&
+                                        Object.keys(feedback.metadata).length >
+                                            0 ? (
+                                            Object.entries(
+                                                feedback.metadata
+                                            ).map(([key, value]) => (
                                                 <span
-                                                    key={tag}
+                                                    key={key}
                                                     className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
                                                 >
-                                                    {tag.replace(/_/g, " ")}
+                                                    <span className="font-semibold mr-1">
+                                                        {key}:
+                                                    </span>
+                                                    {String(value)}
                                                 </span>
                                             ))
                                         ) : (
                                             <span className="text-sm text-gray-400 italic">
-                                                No tags associated
+                                                No metadata associated
                                             </span>
                                         )}
                                     </div>

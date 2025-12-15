@@ -1,12 +1,5 @@
 export interface FeedbackAttributes {
-    Reason: string;
-    unknown_word?: boolean;
-    user_request?: string;
-    call_external?: boolean;
-    unknown_category?: boolean;
-    unknown_priority?: boolean;
-    available_memories?: string;
-    feedback_request_reason?: string;
+    [key: string]: any;
 }
 
 export interface FeedbackItem {
@@ -18,8 +11,6 @@ export interface FeedbackItem {
     status: string; // "PENDING", "COMPLETED", etc.
     feedbackMessage: string | null;
     feedbackAttributes?: {
-        tags?: string[];
-        feedback_request_reason?: string;
         [key: string]: any;
     };
     feedbackData?: {
