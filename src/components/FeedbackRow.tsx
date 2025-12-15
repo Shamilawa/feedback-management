@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import {
     Pencil,
     Trash2,
-    CheckCircle2,
-    X,
     FileText,
     AlignLeft,
     MessageSquare,
@@ -47,7 +45,8 @@ export default function FeedbackRow({
 
     const confirmDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        onDelete(feedback.sessionId);
+        onDelete(feedback.id);
+        setShowDeleteConfirm(false);
     };
 
     const cancelDelete = (e: React.MouseEvent) => {
@@ -184,38 +183,13 @@ export default function FeedbackRow({
 
                 {/* 5. Delete */}
                 <td className="px-6 py-4 align-top text-center w-16 py-5">
-                    {showDeleteConfirm ? (
-                        <div
-                            className="flex flex-col items-center gap-2 animate-in fade-in zoom-in duration-200 absolute bg-white p-2 rounded-lg shadow-lg border border-gray-100 z-10 -ml-8 mt-[-10px]"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <span className="text-xs text-red-600 font-bold whitespace-nowrap">
-                                Using?
-                            </span>
-                            <div className="flex gap-1">
-                                <button
-                                    onClick={confirmDelete}
-                                    className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
-                                >
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                    onClick={cancelDelete}
-                                    className="p-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleDeleteClick}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Delete Feedback"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
-                    )}
+                    <button
+                        onClick={handleDeleteClick}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        title="Delete Feedback"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
                 </td>
             </tr>
 
@@ -348,6 +322,35 @@ export default function FeedbackRow({
                     onSave={handleSave}
                     onCancel={() => setIsEditModalOpen(false)}
                 />
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                title="Confirm Deletion"
+                className="max-w-md"
+            >
+                <div className="p-6">
+                    <p className="text-sm text-gray-600 mb-6">
+                        Are you sure you want to delete this feedback item? This
+                        action cannot be undone.
+                    </p>
+                    <div className="flex justify-end gap-3">
+                        <button
+                            onClick={cancelDelete}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmDelete}
+                            className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
             </Modal>
         </React.Fragment>
     );

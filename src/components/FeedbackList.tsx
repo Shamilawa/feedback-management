@@ -56,20 +56,43 @@ export default function FeedbackList() {
         setOpenId(openId === id ? null : id);
     };
 
-    const handleDelete = (id: string) => {
-        // Trigger exit animation
-        setDeletingIds((prev) => new Set(prev).add(id));
+    const handleDelete = async (id: string) => {
+        try {
+            // Trigger exit animation
+            setDeletingIds((prev) => new Set(prev).add(id));
 
-        // Wait for animation to finish before actual removal
-        setTimeout(() => {
-            setItems(items.filter((item) => item.sessionId !== id));
+            // Call API
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/${id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete feedback");
+            }
+
+            // Wait for animation to finish before actual removal from state
+            setTimeout(() => {
+                setItems(items.filter((item) => item.id !== id));
+                setDeletingIds((prev) => {
+                    const next = new Set(prev);
+                    next.delete(id);
+                    return next;
+                });
+                if (openId === id) setOpenId(null);
+            }, 300); // Matches the duration-300 class
+        } catch (error) {
+            console.error("Error deleting feedback:", error);
+            // Revert deletion state if API fails
             setDeletingIds((prev) => {
                 const next = new Set(prev);
                 next.delete(id);
                 return next;
             });
-            if (openId === id) setOpenId(null);
-        }, 300); // Matches the duration-300 class
+            // You might want to show a toast here
+        }
     };
 
     const handleUpdate = async (id: string, updates: Partial<FeedbackItem>) => {
