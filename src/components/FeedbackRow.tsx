@@ -57,7 +57,7 @@ export default function FeedbackRow({
 
     const handleSave = async (updates: Partial<FeedbackItem>) => {
         try {
-            await onUpdate(feedback.sessionId, updates);
+            await onUpdate(feedback.id, updates);
             setIsEditModalOpen(false);
             toast.success("Feedback updated correctly");
         } catch (error) {

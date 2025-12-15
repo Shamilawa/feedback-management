@@ -10,6 +10,7 @@ export interface FeedbackAttributes {
 }
 
 export interface FeedbackItem {
+    id: string;
     sessionId: string;
     workflowName: string;
     feedbackRequestReason?: string; // New top-level field
