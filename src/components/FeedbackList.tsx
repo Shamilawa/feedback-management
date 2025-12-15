@@ -28,27 +28,26 @@ export default function FeedbackList() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-    useEffect(() => {
-        const fetchFeedback = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch(import.meta.env.VITE_API_URL);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch feedback data");
-                }
-                const result = await response.json();
-                setItems(result.data || []);
-                setError(null);
-            } catch (err) {
-                console.error("Error fetching feedback:", err);
-                setError(
-                    "Failed to load feedback data. Please try again later."
-                );
-            } finally {
-                setIsLoading(false);
+    const fetchFeedback = async () => {
+        try {
+            // Only set loading on initial load or if explicitly needed
+            // setIsLoading(true); // removed to avoid flashing on every update
+            const response = await fetch(import.meta.env.VITE_API_URL);
+            if (!response.ok) {
+                throw new Error("Failed to fetch feedback data");
             }
-        };
+            const result = await response.json();
+            setItems(result.data || []);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching feedback:", err);
+            setError("Failed to load feedback data. Please try again later.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchFeedback();
     }, []);
 
@@ -105,8 +104,6 @@ export default function FeedbackList() {
                 providedBy: updates.providedBy,
             };
 
-            // Assuming VITE_UPDATE_FEEDBACK is the base URL (e.g., .../feedback)
-            // and we append the ID: .../feedback/:id
             const response = await fetch(
                 `${import.meta.env.VITE_UPDATE_FEEDBACK}/${id}`,
                 {
@@ -122,13 +119,8 @@ export default function FeedbackList() {
                 throw new Error("Failed to update feedback");
             }
 
-            // Update local state on success
-            setItems(
-                items.map((item) =>
-                    // Use item.id to match the updated ID from onUpdate (which receives feedback.id)
-                    item.id === id ? { ...item, ...updates } : item
-                )
-            );
+            // Refetch data from server to reflect the latest state
+            await fetchFeedback();
         } catch (err) {
             // Re-throw to let child component handle the error UI
             throw err;
