@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, Loader2 } from "lucide-react";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
 
 interface EditFeedbackFormProps {
     feedback: FeedbackItem;
-    onSave: (updatedFeedback: Partial<FeedbackItem>) => void;
+    onSave: (updatedFeedback: Partial<FeedbackItem>) => Promise<void> | void;
     onCancel: () => void;
 }
 
@@ -27,6 +27,7 @@ export default function EditFeedbackForm({
     const [file, setFile] = useState<File | null>(null);
     const [existingFile, setExistingFile] = useState(!!feedback.file);
     const [isDragOver, setIsDragOver] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
 
     const validateFile = (file: File): boolean => {
@@ -159,13 +160,21 @@ export default function EditFeedbackForm({
             }
         }
 
-        onSave({
-            feedbackMessage: feedbackMessage,
-            rationale: rationale,
-            metadata: parsedMetadata,
-            providedBy: providedBy,
-            file: base64File,
-        });
+        try {
+            setIsSaving(true);
+            await onSave({
+                feedbackMessage: feedbackMessage,
+                rationale: rationale,
+                metadata: parsedMetadata,
+                providedBy: providedBy,
+                file: base64File,
+            });
+        } catch (error) {
+            console.error("Error saving feedback:", error);
+            // Toast handling is likely done in parent, but strictly speaking we ensure we stop loading here
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -382,15 +391,24 @@ export default function EditFeedbackForm({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm"
+                        disabled={isSaving}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm"
+                        disabled={isSaving}
+                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Save Changes
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            "Save Changes"
+                        )}
                     </button>
                 </div>
             </div>

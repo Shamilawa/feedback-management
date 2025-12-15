@@ -161,10 +161,22 @@ export default function FeedbackRow({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsEditModalOpen(true);
+                            if (feedback.status.toUpperCase() !== "COMPLETED") {
+                                setIsEditModalOpen(true);
+                            }
                         }}
-                        className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
-                        title="Provide Feedback"
+                        disabled={feedback.status.toUpperCase() === "COMPLETED"}
+                        className={cn(
+                            "p-2 rounded-lg transition-all",
+                            feedback.status.toUpperCase() === "COMPLETED"
+                                ? "text-gray-300 cursor-not-allowed"
+                                : "text-gray-400 hover:text-gray-900 hover:bg-gray-100"
+                        )}
+                        title={
+                            feedback.status.toUpperCase() === "COMPLETED"
+                                ? "Feedback Completed"
+                                : "Provide Feedback"
+                        }
                     >
                         <Pencil className="w-4 h-4" />
                     </button>
