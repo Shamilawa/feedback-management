@@ -1,93 +1,57 @@
-import { useState, useMemo } from "react";
-import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import {
+    Search,
+    Filter,
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+    AlertCircle,
+} from "lucide-react";
 import FeedbackRow from "./FeedbackRow";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
 
-const MOCK_DATA: FeedbackItem[] = [
-    {
-        sessionId: "59bacfd4-52cf-4980-8c73-703697dc62ba",
-        workflowName: "Ticket Resolution",
-        rationale:
-            "The request is a general greeting without a specific task or category.",
-        feedbackAttributes: {
-            Reason: "The request is a general greeting and doesn't specify a particular category or priority.",
-            unknown_word: false,
-            user_request: "Hi how are you",
-            call_external: true,
-            unknown_category: true,
-            unknown_priority: true,
-            available_memories:
-                "Greetings, general inquiries, conversational responses.",
-            feedback_request_reason:
-                "The request is a general greeting without a specific task or category.",
-        },
-        status: "PENDING",
-        feedbackMessage: null,
-        feedbackData: null,
-        feedbackFile: null,
-        date: "Dec 14, 2023",
-    },
-    {
-        sessionId: "2",
-        workflowName: "Dashboard Analytics",
-        rationale: "Contrast issues observed in dark mode environment.",
-        status: "Pending",
-        feedbackMessage:
-            "Some of the charts are hard to read in dark mode, specifically the blue line on the black background.",
-        feedbackData: null,
-        feedbackFile: null,
-        date: "Dec 13, 2023",
-    },
-    {
-        sessionId: "3",
-        workflowName: "Report Export",
-        rationale: "Efficiency bottleneck in generating monthly reports.",
-        status: "Reviewed",
-        feedbackMessage:
-            "We need a way to export all monthly reports at once instead of one by one.",
-        feedbackData: null,
-        feedbackFile:
-            "UEsDBBQAAAAIAAAAIQAqcH........(base64_placeholder)........",
-        date: "Dec 12, 2023",
-    },
-    {
-        sessionId: "4",
-        workflowName: "Mobile Navigation",
-        rationale: "UI overlap issue on newer iPhone models.",
-        status: "New",
-        feedbackMessage:
-            "On iPhone 14 Pro, the navigation menu overlaps with the dynamic island.",
-        feedbackData: null,
-        feedbackFile: null,
-        date: "Dec 10, 2023",
-    },
-    {
-        sessionId: "5",
-        workflowName: "Analytics Performance",
-        rationale: "Page load speed below acceptable threshold.",
-        status: "New",
-        feedbackMessage:
-            "The analytics dashboard takes over 5 seconds to load on 4G networks.",
-        feedbackData: null,
-        feedbackFile: null,
-        date: "Dec 09, 2023",
-    },
-];
+// Removed MOCK_DATA in favor of real backend data
 
-type FilterStatus = "All" | FeedbackItem["status"];
-
-const ITEMS_PER_PAGE = 5;
+// Removed MOCK_DATA in favor of real backend data
 
 export default function FeedbackList() {
-    const [items, setItems] = useState<FeedbackItem[]>(MOCK_DATA);
+    const [items, setItems] = useState<FeedbackItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const [openId, setOpenId] = useState<string | null>(null);
     const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
-    // UX State
+    // Search & Filter State
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState<FilterStatus>("All");
+    const [statusFilter, setStatusFilter] = useState<string>("ALL");
     const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    useEffect(() => {
+        const fetchFeedback = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch(import.meta.env.VITE_API_URL);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch feedback data");
+                }
+                const result = await response.json();
+                setItems(result.data || []);
+                setError(null);
+            } catch (err) {
+                console.error("Error fetching feedback:", err);
+                setError(
+                    "Failed to load feedback data. Please try again later."
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchFeedback();
+    }, []);
 
     const handleToggle = (id: string) => {
         setOpenId(openId === id ? null : id);
@@ -136,21 +100,48 @@ export default function FeedbackList() {
     }, [items, searchTerm, statusFilter]);
 
     // Pagination Logic
-    const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
     const paginatedItems = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        return filteredItems.slice(start, start + ITEMS_PER_PAGE);
-    }, [filteredItems, currentPage]);
+        const start = (currentPage - 1) * itemsPerPage;
+        return filteredItems.slice(start, start + itemsPerPage);
+    }, [filteredItems, currentPage, itemsPerPage]);
 
     // Reset pagination when filters change
     useMemo(() => {
         setCurrentPage(1);
     }, [searchTerm, statusFilter]);
 
+    // --- UI: Loading State ---
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-400">
+                <Loader2 className="w-10 h-10 animate-spin mb-4 text-indigo-500" />
+                <p className="text-sm font-medium">Loading feedback...</p>
+            </div>
+        );
+    }
+
+    // --- UI: Error State ---
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-red-500">
+                <AlertCircle className="w-10 h-10 mb-4" />
+                <p className="text-lg font-medium mb-2">Something went wrong</p>
+                <p className="text-sm text-gray-500">{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-6 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm text-sm font-medium"
+                >
+                    Retry Connection
+                </button>
+            </div>
+        );
+    }
+
     return (
-        <div className="space-y-6">
-            {/* Controls Section */}
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+            {/* Header & Controls */}
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 {/* Search and Total Count */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="relative flex-1 max-w-md">

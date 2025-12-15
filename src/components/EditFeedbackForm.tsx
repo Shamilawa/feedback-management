@@ -16,6 +16,7 @@ export default function EditFeedbackForm({
 }: EditFeedbackFormProps) {
     const [content, setContent] = useState(feedback.feedbackMessage || "");
     const [file, setFile] = useState<File | null>(null);
+    const [existingFile, setExistingFile] = useState(!!feedback.feedbackFile);
     const [isDragOver, setIsDragOver] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +55,7 @@ export default function EditFeedbackForm({
             const droppedFile = e.dataTransfer.files[0];
             if (validateFile(droppedFile)) {
                 setFile(droppedFile);
+                setExistingFile(false); // Replace existing file
             }
         }
     };
@@ -63,6 +65,7 @@ export default function EditFeedbackForm({
             const selectedFile = e.target.files[0];
             if (validateFile(selectedFile)) {
                 setFile(selectedFile);
+                setExistingFile(false); // Replace existing file
             } else {
                 e.target.value = ""; // Reset input
             }
@@ -86,7 +89,11 @@ export default function EditFeedbackForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        let base64File = feedback.feedbackFile;
+        // Determine the final file value
+        // If we have a new file, convert it
+        // If we don't have a new file but have existingFile, keep the original
+        // Otherwise (removed existing and no new), it's null
+        let base64File: string | null = null;
 
         if (file) {
             try {
@@ -96,6 +103,8 @@ export default function EditFeedbackForm({
                 setError("Error processing file. Please try again.");
                 return;
             }
+        } else if (existingFile) {
+            base64File = feedback.feedbackFile;
         }
 
         onSave({
@@ -143,6 +152,8 @@ export default function EditFeedbackForm({
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         onClick={() =>
+                            !file &&
+                            !existingFile &&
                             document.getElementById("file-upload")?.click()
                         }
                     >
@@ -159,6 +170,25 @@ export default function EditFeedbackForm({
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setFile(null);
+                                            }}
+                                            className="text-xs text-red-500 hover:text-red-700 font-medium"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : existingFile ? (
+                                <div className="flex items-center justify-center gap-2 text-indigo-600">
+                                    <FileText className="h-8 w-8" />
+                                    <div className="text-left">
+                                        <div className="text-sm font-medium">
+                                            Existing Excel File
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setExistingFile(false);
                                             }}
                                             className="text-xs text-red-500 hover:text-red-700 font-medium"
                                         >

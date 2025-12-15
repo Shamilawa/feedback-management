@@ -215,6 +215,37 @@ export default function FeedbackRow({
                         />
                     ) : (
                         <div className="px-5 py-4 bg-gray-50/50 border-t border-gray-100 text-sm text-gray-600 space-y-5">
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                    Detailed Feedback Message
+                                </h4>
+                                <p className="leading-relaxed whitespace-pre-wrap text-gray-800">
+                                    {feedback.feedbackMessage ||
+                                        "No detailed feedback provided."}
+                                </p>
+                            </div>
+
+                            {feedback.feedbackFile && (
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                        Attachments
+                                    </h4>
+                                    <a
+                                        href={`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${feedback.feedbackFile}`}
+                                        download={`feedback-${feedback.sessionId}.xlsx`}
+                                        className="inline-flex items-center gap-2 p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-all group/file"
+                                    >
+                                        <FileText className="w-4 h-4 text-gray-400 group-hover/file:text-indigo-500" />
+                                        <span className="font-medium text-xs">
+                                            Download Excel Report
+                                        </span>
+                                    </a>
+                                </div>
+                            )}
+
+                            {/* Separator */}
+                            <div className="border-t border-gray-200" />
+
                             {/* AI Analysis Section - Compact */}
                             {feedback.feedbackAttributes && (
                                 <div className="space-y-3">
@@ -291,37 +322,6 @@ export default function FeedbackRow({
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-
-                            {/* Separator */}
-                            <div className="border-t border-gray-200" />
-
-                            <div>
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                    Detailed Feedback Message
-                                </h4>
-                                <p className="leading-relaxed whitespace-pre-wrap text-gray-800">
-                                    {feedback.feedbackMessage ||
-                                        "No detailed feedback provided."}
-                                </p>
-                            </div>
-
-                            {feedback.feedbackFile && (
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                        Attachments
-                                    </h4>
-                                    <a
-                                        href={`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${feedback.feedbackFile}`}
-                                        download={`feedback-${feedback.sessionId}.xlsx`}
-                                        className="inline-flex items-center gap-2 p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-all group/file"
-                                    >
-                                        <FileText className="w-4 h-4 text-gray-400 group-hover/file:text-indigo-500" />
-                                        <span className="font-medium text-xs">
-                                            Download Excel Report
-                                        </span>
-                                    </a>
                                 </div>
                             )}
                         </div>
