@@ -11,6 +11,7 @@ import {
     X,
     FileText,
 } from "lucide-react";
+import { toast } from "sonner";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
 import EditFeedbackForm from "./EditFeedbackForm";
@@ -37,7 +38,6 @@ export default function FeedbackRow({
 }: FeedbackRowProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const getStatusColor = (status: FeedbackItem["status"]) => {
         switch (status) {
@@ -87,17 +87,14 @@ export default function FeedbackRow({
     const handleSave = async (updates: Partial<FeedbackItem>) => {
         await onUpdate(feedback.id, updates);
         setIsEditing(false);
-        setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 2000); // Reset success after 2s
+        toast.success("Feedback updated correctly");
     };
 
     return (
         <div
             className={cn(
-                "group bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300",
-                isDeleting && "opacity-0 scale-95 translate-x-4",
-                isSuccess &&
-                    "ring-2 ring-green-500 border-green-500 bg-green-50/10"
+                "group bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-100",
+                isDeleting && "opacity-0 scale-95 translate-x-4"
             )}
         >
             {/* Main Row Content */}
@@ -105,8 +102,7 @@ export default function FeedbackRow({
                 onClick={onToggle}
                 className={cn(
                     "p-4 cursor-pointer flex items-center justify-between gap-4 transition-colors",
-                    isOpen ? "bg-gray-50/50" : "hover:bg-gray-50/30",
-                    isSuccess && "bg-green-50/30"
+                    isOpen ? "bg-gray-50/50" : "hover:bg-gray-50/30"
                 )}
             >
                 {/* Left Section: Info */}
@@ -115,17 +111,11 @@ export default function FeedbackRow({
                         <span
                             className={cn(
                                 "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border transition-colors duration-300",
-                                isSuccess
-                                    ? "bg-green-100 text-green-800 border-green-300"
-                                    : getStatusColor(feedback.status)
+                                getStatusColor(feedback.status)
                             )}
                         >
-                            {isSuccess ? (
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                            ) : (
-                                getStatusIcon(feedback.status)
-                            )}
-                            {isSuccess ? "Updated" : feedback.status}
+                            {getStatusIcon(feedback.status)}
+                            {feedback.status}
                         </span>
                         <span className="text-xs text-gray-500 flex items-center">
                             <Calendar className="w-3 h-3 mr-1" />
@@ -140,6 +130,7 @@ export default function FeedbackRow({
 
                 {/* Right Section: Actions */}
                 <div className="flex items-center gap-3">
+                    {/* ... (Delete confirm and buttons logic remains same) ... */}
                     {showDeleteConfirm ? (
                         <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
                             <span className="text-sm text-red-600 font-medium hidden sm:inline">
