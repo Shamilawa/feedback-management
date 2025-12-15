@@ -192,7 +192,7 @@ export default function FeedbackList() {
                             <tr>
                                 <th
                                     scope="col"
-                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[40%] min-w-[250px]"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[60%] min-w-[250px]"
                                 >
                                     Request Reason
                                 </th>
@@ -201,6 +201,12 @@ export default function FeedbackList() {
                                     className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
                                 >
                                     Applicable Criteria/Tags
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                >
+                                    Status
                                 </th>
                                 <th
                                     scope="col"
@@ -242,7 +248,7 @@ export default function FeedbackList() {
                             ) : (
                                 <tr>
                                     <td
-                                        colSpan={5}
+                                        colSpan={6}
                                         className="px-6 py-12 text-center"
                                     >
                                         <div className="flex flex-col items-center justify-center">

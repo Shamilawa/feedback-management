@@ -88,17 +88,17 @@ export default function FeedbackRow({
                             </svg>
                         </div>
                         <div className="flex-1">
-                            <p className="text-sm text-gray-900 font-semibold mb-1">
+                            <p className="text-sm text-gray-900 font-regular mb-1">
                                 {feedback.feedbackRequestReason ||
                                     feedback.feedbackAttributes
                                         ?.feedback_request_reason ||
                                     feedback.workflowName}
                             </p>
-                            {!isOpen && (
+                            {/* {!isOpen && (
                                 <p className="text-xs text-gray-500 line-clamp-1">
                                     Click to view details...
                                 </p>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </td>
@@ -123,7 +123,24 @@ export default function FeedbackRow({
                     </div>
                 </td>
 
-                {/* 3. Attachments */}
+                {/* 3. Status */}
+                <td className="px-6 py-4 align-top py-5">
+                    <span
+                        className={cn(
+                            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                            feedback.status.toUpperCase() === "COMPLETED"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                                : feedback.status.toUpperCase() === "PENDING"
+                                ? "bg-amber-50 text-amber-700 border-amber-100"
+                                : "bg-gray-100 text-gray-700 border-gray-200"
+                        )}
+                    >
+                        {feedback.status.charAt(0).toUpperCase() +
+                            feedback.status.slice(1).toLowerCase()}
+                    </span>
+                </td>
+
+                {/* 4. Attachments */}
                 <td className="px-6 py-4 align-top py-5">
                     {feedback.file ? (
                         <a
@@ -208,7 +225,7 @@ export default function FeedbackRow({
             {isOpen && (
                 <tr className="bg-gray-50/50">
                     <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-6 py-0 border-b border-gray-100"
                     >
                         <div className="py-6 pl-10 pr-4 grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-200">
