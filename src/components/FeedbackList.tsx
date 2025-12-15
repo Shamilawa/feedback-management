@@ -25,6 +25,7 @@ const MOCK_DATA: FeedbackItem[] = [
         status: "PENDING",
         feedbackMessage: null,
         feedbackData: null,
+        feedbackFile: null,
         date: "Dec 14, 2023",
     },
     {
@@ -35,6 +36,7 @@ const MOCK_DATA: FeedbackItem[] = [
         feedbackMessage:
             "Some of the charts are hard to read in dark mode, specifically the blue line on the black background.",
         feedbackData: null,
+        feedbackFile: null,
         date: "Dec 13, 2023",
     },
     {
@@ -44,7 +46,9 @@ const MOCK_DATA: FeedbackItem[] = [
         status: "Reviewed",
         feedbackMessage:
             "We need a way to export all monthly reports at once instead of one by one.",
-        feedbackData: "mock-url",
+        feedbackData: null,
+        feedbackFile:
+            "UEsDBBQAAAAIAAAAIQAqcH........(base64_placeholder)........",
         date: "Dec 12, 2023",
     },
     {
@@ -55,6 +59,7 @@ const MOCK_DATA: FeedbackItem[] = [
         feedbackMessage:
             "On iPhone 14 Pro, the navigation menu overlaps with the dynamic island.",
         feedbackData: null,
+        feedbackFile: null,
         date: "Dec 10, 2023",
     },
     {
@@ -65,6 +70,7 @@ const MOCK_DATA: FeedbackItem[] = [
         feedbackMessage:
             "The analytics dashboard takes over 5 seconds to load on 4G networks.",
         feedbackData: null,
+        feedbackFile: null,
         date: "Dec 09, 2023",
     },
 ];

@@ -307,18 +307,19 @@ export default function FeedbackRow({
                                 </p>
                             </div>
 
-                            {feedback.feedbackData && (
+                            {feedback.feedbackFile && (
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 mb-2">
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                                         Attachments
                                     </h4>
                                     <a
-                                        href="#"
+                                        href={`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${feedback.feedbackFile}`}
+                                        download={`feedback-${feedback.sessionId}.xlsx`}
                                         className="inline-flex items-center gap-2 p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-all group/file"
                                     >
                                         <FileText className="w-4 h-4 text-gray-400 group-hover/file:text-indigo-500" />
-                                        <span className="font-medium">
-                                            view attachment
+                                        <span className="font-medium text-xs">
+                                            Download Excel Report
                                         </span>
                                     </a>
                                 </div>
