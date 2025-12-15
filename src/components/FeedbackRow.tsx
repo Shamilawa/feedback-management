@@ -10,6 +10,7 @@ import {
     AlertCircle,
     X,
     FileText,
+    Bot,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FeedbackItem } from "../types";
@@ -213,12 +214,94 @@ export default function FeedbackRow({
                             onCancel={() => setIsEditing(false)}
                         />
                     ) : (
-                        <div className="p-6 bg-gray-50/50 border-t border-gray-100 text-sm text-gray-600 space-y-4">
+                        <div className="px-5 py-4 bg-gray-50/50 border-t border-gray-100 text-sm text-gray-600 space-y-5">
+                            {/* AI Analysis Section - Compact */}
+                            {feedback.feedbackAttributes && (
+                                <div className="space-y-3">
+                                    <h4 className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                        <Bot className="w-3.5 h-3.5" />
+                                        AI Decision Logic
+                                    </h4>
+
+                                    {/* Vertical layout for Reason vs Attributes */}
+                                    <div className="space-y-4">
+                                        {/* Main Reason */}
+                                        <div className="space-y-1.5">
+                                            <span className="text-xs font-semibold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 inline-block">
+                                                Reasoning
+                                            </span>
+                                            <p className="text-gray-900 leading-relaxed font-medium">
+                                                {
+                                                    feedback.feedbackAttributes
+                                                        .Reason
+                                                }
+                                            </p>
+                                        </div>
+
+                                        {/* Compact Attributes List */}
+                                        <div className="bg-white border border-gray-200 rounded-lg p-3">
+                                            <div className="space-y-2">
+                                                {Object.entries(
+                                                    feedback.feedbackAttributes
+                                                )
+                                                    .filter(
+                                                        ([key]) =>
+                                                            key !== "Reason" &&
+                                                            key !==
+                                                                "feedback_request_reason"
+                                                    ) // Filter out redundant keys if any
+                                                    .map(([key, value]) => (
+                                                        <div
+                                                            key={key}
+                                                            className="flex items-center justify-between gap-2 text-xs border-b border-gray-50 last:border-0 pb-2 last:pb-0"
+                                                        >
+                                                            <span className="text-gray-500 font-medium truncate">
+                                                                {key}
+                                                            </span>
+                                                            <span className="font-medium text-gray-900 text-right">
+                                                                {typeof value ===
+                                                                "boolean" ? (
+                                                                    <span
+                                                                        className={cn(
+                                                                            "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide",
+                                                                            value
+                                                                                ? "bg-green-100 text-green-700"
+                                                                                : "bg-gray-100 text-gray-500"
+                                                                        )}
+                                                                    >
+                                                                        {value
+                                                                            ? "Yes"
+                                                                            : "No"}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span
+                                                                        className="truncate max-w-[300px] inline-block align-bottom"
+                                                                        title={String(
+                                                                            value
+                                                                        )}
+                                                                    >
+                                                                        {String(
+                                                                            value
+                                                                        )}
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Separator */}
+                            <div className="border-t border-gray-200" />
+
                             <div>
-                                <h4 className="font-semibold text-gray-900 mb-2">
-                                    Detailed Feedback
+                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                    Detailed Feedback Message
                                 </h4>
-                                <p className="leading-relaxed whitespace-pre-wrap">
+                                <p className="leading-relaxed whitespace-pre-wrap text-gray-800">
                                     {feedback.feedbackMessage ||
                                         "No detailed feedback provided."}
                                 </p>

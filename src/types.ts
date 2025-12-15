@@ -17,5 +17,6 @@ export interface FeedbackItem {
     status: "PENDING" | "REVIEWED" | "NEW" | "Pending" | "Reviewed" | "New";
     feedbackMessage: string | null;
     feedbackData: string | null;
+    feedbackFile: string | null;
     date?: string;
 }
