@@ -56,9 +56,14 @@ export default function FeedbackRow({
     };
 
     const handleSave = async (updates: Partial<FeedbackItem>) => {
-        await onUpdate(feedback.sessionId, updates);
-        setIsEditModalOpen(false);
-        toast.success("Feedback updated correctly");
+        try {
+            await onUpdate(feedback.sessionId, updates);
+            setIsEditModalOpen(false);
+            toast.success("Feedback updated correctly");
+        } catch (error) {
+            console.error("Failed to update feedback:", error);
+            toast.error("Failed to update feedback. Please try again.");
+        }
     };
 
     // Extract Tags

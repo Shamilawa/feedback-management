@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Upload, FileText } from "lucide-react";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
+import { toast } from "sonner";
 
 interface EditFeedbackFormProps {
     feedback: FeedbackItem;
@@ -14,11 +15,19 @@ export default function EditFeedbackForm({
     onSave,
     onCancel,
 }: EditFeedbackFormProps) {
-    const [content, setContent] = useState(feedback.feedbackMessage || "");
+    const [feedbackMessage, setFeedbackMessage] = useState(
+        feedback.feedbackMessage || ""
+    );
+    const [rationale, setRationale] = useState(feedback.rationale || "");
+    const [metadata, setMetadata] = useState(
+        feedback.metadata ? JSON.stringify(feedback.metadata, null, 2) : ""
+    );
+    const [providedBy, setProvidedBy] = useState(feedback.providedBy || "");
+
     const [file, setFile] = useState<File | null>(null);
     const [existingFile, setExistingFile] = useState(!!feedback.file);
     const [isDragOver, setIsDragOver] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
 
     const validateFile = (file: File): boolean => {
         // Check for Excel mime types or extension
@@ -31,10 +40,13 @@ export default function EditFeedbackForm({
             fileName.endsWith(".xls") || fileName.endsWith(".xlsx");
 
         if (!validTypes.includes(file.type) && !validExtension) {
-            setError("Only Excel files (.xls, .xlsx) are allowed.");
+            setErrors((prev) => ({
+                ...prev,
+                file: "Only Excel files (.xls, .xlsx) are allowed.",
+            }));
             return false;
         }
-        setError(null);
+        setErrors((prev) => ({ ...prev, file: null }));
         return true;
     };
 
@@ -86,29 +98,80 @@ export default function EditFeedbackForm({
         });
     };
 
+    const validateJSON = (value: string): boolean => {
+        try {
+            JSON.parse(value);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Determine the final file value
-        // If we have a new file, convert it
-        // If we don't have a new file but have existingFile, keep the original
-        // Otherwise (removed existing and no new), it's null
-        let base64File: string | null = null;
+        const newErrors: { [key: string]: string | null } = {};
+        let isValid = true;
 
+        if (!feedbackMessage.trim()) {
+            newErrors.feedbackMessage = "Feedback content is required.";
+            isValid = false;
+        }
+
+        if (!rationale.trim()) {
+            newErrors.rationale = "Rationale is required.";
+            isValid = false;
+        }
+
+        if (!metadata.trim()) {
+            newErrors.metadata = "Metadata is required.";
+            isValid = false;
+        } else if (!validateJSON(metadata)) {
+            newErrors.metadata = "Invalid JSON format.";
+            isValid = false;
+        }
+
+        if (errors.file) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            setErrors((prev) => ({ ...prev, ...newErrors }));
+            toast.error("Please fix form errors.");
+            return;
+        }
+
+        // Clear previous errors if valid
+        setErrors({});
+
+        // Determine the final file value
+        let base64File: string | null = null;
         if (file) {
             try {
                 base64File = await convertToBase64(file);
             } catch (err) {
                 console.error("Error converting file to base64", err);
-                setError("Error processing file. Please try again.");
+                toast.error("Error processing file");
                 return;
             }
         } else if (existingFile) {
             base64File = feedback.file;
         }
 
+        let parsedMetadata = null;
+        if (metadata) {
+            try {
+                parsedMetadata = JSON.parse(metadata);
+            } catch (e) {
+                console.error("Error parsing metadata", e);
+            }
+        }
+
         onSave({
-            feedbackMessage: content,
+            feedbackMessage: feedbackMessage,
+            rationale: rationale,
+            metadata: parsedMetadata,
+            providedBy: providedBy,
             file: base64File,
         });
     };
@@ -118,26 +181,64 @@ export default function EditFeedbackForm({
             onSubmit={handleSubmit}
             className="p-6 bg-gray-50/50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200"
         >
-            <div className="space-y-4">
+            <div className="space-y-6">
+                {/* Feedback Content */}
                 <div>
                     <label
                         htmlFor="feedback-content"
-                        className="block text-sm font-medium text-gray-700 mb-1"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
                     >
-                        Feedback Content
+                        Feedback <span className="text-red-500">*</span>
                     </label>
                     <textarea
                         id="feedback-content"
                         rows={4}
-                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        className={cn(
+                            "w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow",
+                            errors.feedbackMessage &&
+                                "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        )}
+                        value={feedbackMessage}
+                        onChange={(e) => setFeedbackMessage(e.target.value)}
                         placeholder="Detailed feedback content..."
                     />
+                    {errors.feedbackMessage && (
+                        <p className="text-xs text-red-600 font-medium mt-1">
+                            {errors.feedbackMessage}
+                        </p>
+                    )}
                 </div>
 
+                {/* Rationale */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                        htmlFor="rationale"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                        Rationale <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        id="rationale"
+                        rows={3}
+                        className={cn(
+                            "w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow",
+                            errors.rationale &&
+                                "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        )}
+                        value={rationale}
+                        onChange={(e) => setRationale(e.target.value)}
+                        placeholder="Explain the reasoning behind this feedback..."
+                    />
+                    {errors.rationale && (
+                        <p className="text-xs text-red-600 font-medium mt-1">
+                            {errors.rationale}
+                        </p>
+                    )}
+                </div>
+
+                {/* Attachments */}
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
                         Attachments
                     </label>
                     <div
@@ -146,7 +247,7 @@ export default function EditFeedbackForm({
                             isDragOver
                                 ? "border-indigo-500 bg-indigo-50/50"
                                 : "border-gray-300 hover:bg-gray-50",
-                            error ? "border-red-300 bg-red-50/50" : ""
+                            errors.file ? "border-red-300 bg-red-50/50" : ""
                         )}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
@@ -201,7 +302,7 @@ export default function EditFeedbackForm({
                                     <Upload
                                         className={cn(
                                             "mx-auto h-12 w-12",
-                                            error
+                                            errors.file
                                                 ? "text-red-400"
                                                 : "text-gray-400"
                                         )}
@@ -228,9 +329,9 @@ export default function EditFeedbackForm({
                                     <p className="text-xs text-gray-500">
                                         XLS or XLSX only
                                     </p>
-                                    {error && (
+                                    {errors.file && (
                                         <p className="text-xs text-red-600 font-medium mt-2">
-                                            {error}
+                                            {errors.file}
                                         </p>
                                     )}
                                 </>
@@ -239,7 +340,53 @@ export default function EditFeedbackForm({
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-2">
+                {/* Metadata */}
+                <div>
+                    <label
+                        htmlFor="metadata"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                        Metadata (JSON) <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        id="metadata"
+                        rows={4}
+                        className={cn(
+                            "w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow font-mono",
+                            errors.metadata &&
+                                "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        )}
+                        value={metadata}
+                        onChange={(e) => setMetadata(e.target.value)}
+                        placeholder='{"key": "value"}'
+                    />
+                    {errors.metadata && (
+                        <p className="text-xs text-red-600 font-medium mt-1">
+                            {errors.metadata}
+                        </p>
+                    )}
+                </div>
+
+                {/* Provided By */}
+                <div>
+                    <label
+                        htmlFor="provided-by"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                        Provided By
+                    </label>
+                    <input
+                        id="provided-by"
+                        type="text"
+                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border transition-shadow"
+                        value={providedBy}
+                        onChange={(e) => setProvidedBy(e.target.value)}
+                        placeholder="John Doe"
+                    />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                     <button
                         type="button"
                         onClick={onCancel}

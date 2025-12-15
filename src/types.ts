@@ -28,5 +28,6 @@ export interface FeedbackItem {
     };
     file: string | null;
     metadata?: any; // New field
+    providedBy?: string; // New field
     date?: string;
 }

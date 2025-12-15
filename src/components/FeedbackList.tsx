@@ -73,14 +73,42 @@ export default function FeedbackList() {
     };
 
     const handleUpdate = async (id: string, updates: Partial<FeedbackItem>) => {
-        // Simulate API delay for better UX feel
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        try {
+            const payload = {
+                feedbackMessage: updates.feedbackMessage,
+                rationale: updates.rationale,
+                file: updates.file,
+                metadata: updates.metadata,
+                providedBy: updates.providedBy,
+            };
 
-        setItems(
-            items.map((item) =>
-                item.sessionId === id ? { ...item, ...updates } : item
-            )
-        );
+            // Assuming VITE_UPDATE_FEEDBACK is the base URL (e.g., .../feedback)
+            // and we append the ID: .../feedback/:id
+            const response = await fetch(
+                `${import.meta.env.VITE_UPDATE_FEEDBACK}/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update feedback");
+            }
+
+            // Update local state on success
+            setItems(
+                items.map((item) =>
+                    item.sessionId === id ? { ...item, ...updates } : item
+                )
+            );
+        } catch (err) {
+            // Re-throw to let child component handle the error UI
+            throw err;
+        }
     };
 
     // Filter Logic
