@@ -118,11 +118,6 @@ export default function EditFeedbackForm({
             isValid = false;
         }
 
-        if (!rationale.trim()) {
-            newErrors.rationale = "Rationale is required.";
-            isValid = false;
-        }
-
         if (metadata.trim() && !validateJSON(metadata)) {
             newErrors.metadata = "Invalid JSON format.";
             isValid = false;
@@ -212,7 +207,7 @@ export default function EditFeedbackForm({
                         htmlFor="rationale"
                         className="block text-sm font-semibold text-gray-700 mb-1"
                     >
-                        Rationale <span className="text-red-500">*</span>
+                        Rationale
                     </label>
                     <textarea
                         id="rationale"

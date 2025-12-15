@@ -169,7 +169,7 @@ export default function FeedbackRow({
                             setIsEditModalOpen(true);
                         }}
                         className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
-                        title="Edit Feedback"
+                        title="Provide Feedback"
                     >
                         <Pencil className="w-4 h-4" />
                     </button>
@@ -329,7 +329,7 @@ export default function FeedbackRow({
             <Modal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                title="Edit Feedback"
+                title="Provide Feedback"
             >
                 <EditFeedbackForm
                     feedback={feedback}
