@@ -123,10 +123,7 @@ export default function EditFeedbackForm({
             isValid = false;
         }
 
-        if (!metadata.trim()) {
-            newErrors.metadata = "Metadata is required.";
-            isValid = false;
-        } else if (!validateJSON(metadata)) {
+        if (metadata.trim() && !validateJSON(metadata)) {
             newErrors.metadata = "Invalid JSON format.";
             isValid = false;
         }
@@ -346,7 +343,7 @@ export default function EditFeedbackForm({
                         htmlFor="metadata"
                         className="block text-sm font-semibold text-gray-700 mb-1"
                     >
-                        Metadata (JSON) <span className="text-red-500">*</span>
+                        Metadata (JSON)
                     </label>
                     <textarea
                         id="metadata"

@@ -102,7 +102,8 @@ export default function FeedbackList() {
             // Update local state on success
             setItems(
                 items.map((item) =>
-                    item.sessionId === id ? { ...item, ...updates } : item
+                    // Use item.id to match the updated ID from onUpdate (which receives feedback.id)
+                    item.id === id ? { ...item, ...updates } : item
                 )
             );
         } catch (err) {
