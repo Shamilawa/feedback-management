@@ -6,100 +6,66 @@ import { cn } from "../lib/utils";
 
 const MOCK_DATA: FeedbackItem[] = [
     {
-        id: "1",
-        feedbackSummary: "Login process is confusing for new users",
-        feedbackDetails:
-            "The current login flow redirects too many times. Users are getting lost between SSO and email login. We should simplify the initial screen to only show one primary option based on their domain.",
+        sessionId: "59bacfd4-52cf-4980-8c73-703697dc62ba",
+        workflowName: "Ticket Resolution",
+        rationale:
+            "The request is a general greeting without a specific task or category.",
+        feedbackAttributes: {
+            Reason: "The request is a general greeting and doesn't specify a particular category or priority.",
+            unknown_word: false,
+            user_request: "Hi how are you",
+            call_external: true,
+            unknown_category: true,
+            unknown_priority: true,
+            available_memories:
+                "Greetings, general inquiries, conversational responses.",
+            feedback_request_reason:
+                "The request is a general greeting without a specific task or category.",
+        },
+        status: "PENDING",
+        feedbackMessage: null,
+        feedbackData: null,
         date: "Dec 14, 2023",
-        status: "New",
-        attachmentUrl: "mock-url",
     },
     {
-        id: "2",
-        feedbackSummary: "Dark mode contrast issues on dashboard",
-        feedbackDetails:
-            "Some of the charts are hard to read in dark mode, specifically the blue line on the black background. The contrast ratio needs to be improved for accessibility compliance.",
+        sessionId: "2",
+        workflowName: "Dashboard Analytics",
+        rationale: "Contrast issues observed in dark mode environment.",
+        status: "Pending",
+        feedbackMessage:
+            "Some of the charts are hard to read in dark mode, specifically the blue line on the black background.",
+        feedbackData: null,
         date: "Dec 13, 2023",
-        status: "Pending",
     },
     {
-        id: "3",
-        feedbackSummary: "Feature request: Bulk export for reports",
-        feedbackDetails:
-            "We need a way to export all monthly reports at once instead of one by one. This is a major pain point for our finance team at the end of the month.",
+        sessionId: "3",
+        workflowName: "Report Export",
+        rationale: "Efficiency bottleneck in generating monthly reports.",
+        status: "Reviewed",
+        feedbackMessage:
+            "We need a way to export all monthly reports at once instead of one by one.",
+        feedbackData: "mock-url",
         date: "Dec 12, 2023",
-        status: "Reviewed",
     },
     {
-        id: "4",
-        feedbackSummary: "Mobile navigation menu glitch",
-        feedbackDetails:
-            "On iPhone 14 Pro, the navigation menu overlaps with the dynamic island when scrolled to the top. Needs padding adjustment.",
+        sessionId: "4",
+        workflowName: "Mobile Navigation",
+        rationale: "UI overlap issue on newer iPhone models.",
+        status: "New",
+        feedbackMessage:
+            "On iPhone 14 Pro, the navigation menu overlaps with the dynamic island.",
+        feedbackData: null,
         date: "Dec 10, 2023",
-        status: "New",
     },
     {
-        id: "5",
-        feedbackSummary: "Slow loading times on analytics page",
-        feedbackDetails:
-            "The analytics dashboard takes over 5 seconds to load on 4G networks. We need to optimize the initial data fetch or implement skeleton loading states.",
+        sessionId: "5",
+        workflowName: "Analytics Performance",
+        rationale: "Page load speed below acceptable threshold.",
+        status: "New",
+        feedbackMessage:
+            "The analytics dashboard takes over 5 seconds to load on 4G networks.",
+        feedbackData: null,
         date: "Dec 09, 2023",
-        status: "New",
-    },
-    {
-        id: "6",
-        feedbackSummary: "Typo in terms of service",
-        feedbackDetails:
-            "Section 4.2 has a spelling mistake. It says 'liablity' instead of 'liability'.",
-        date: "Dec 08, 2023",
-        status: "Reviewed",
-    },
-    {
-        id: "7",
-        feedbackSummary: "Request for calendar integration",
-        feedbackDetails:
-            "It would be great if we could sync the deadlines directly to Google Calendar.",
-        date: "Dec 07, 2023",
-        status: "Pending",
-    },
-    {
-        id: "8",
-        feedbackSummary: "Profile image upload fails",
-        feedbackDetails:
-            "Uploading a PNG larger than 2MB causes a silent failure. Needs a proper error message.",
-        date: "Dec 06, 2023",
-        status: "New",
-    },
-    {
-        id: "9",
-        feedbackSummary: "Confusion about pricing tiers",
-        feedbackDetails:
-            "The standard plan features are not clearly distinguished from the pro plan on the pricing page.",
-        date: "Dec 05, 2023",
-        status: "Reviewed",
-    },
-    {
-        id: "10",
-        feedbackSummary: "Export to CSV is broken",
-        feedbackDetails:
-            "Clicking the export button does nothing in Safari browser.",
-        date: "Dec 04, 2023",
-        status: "New",
-    },
-    {
-        id: "11",
-        feedbackSummary: "Add dark mode support",
-        feedbackDetails: "Please add a toggle for dark mode in the settings.",
-        date: "Dec 03, 2023",
-        status: "New",
-    },
-    {
-        id: "12",
-        feedbackSummary: "Notification settings not saving",
-        feedbackDetails:
-            "I uncheck email notifications but they turn back on after refresh.",
-        date: "Dec 02, 2023",
-        status: "Pending",
     },
 ];
 
@@ -127,7 +93,7 @@ export default function FeedbackList() {
 
         // Wait for animation to finish before actual removal
         setTimeout(() => {
-            setItems(items.filter((item) => item.id !== id));
+            setItems(items.filter((item) => item.sessionId !== id));
             setDeletingIds((prev) => {
                 const next = new Set(prev);
                 next.delete(id);
@@ -143,7 +109,7 @@ export default function FeedbackList() {
 
         setItems(
             items.map((item) =>
-                item.id === id ? { ...item, ...updates } : item
+                item.sessionId === id ? { ...item, ...updates } : item
             )
         );
     };
@@ -152,14 +118,13 @@ export default function FeedbackList() {
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
             const matchesSearch =
-                item.feedbackSummary
+                item.workflowName
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                item.feedbackDetails
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
+                item.rationale.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus =
-                statusFilter === "All" || item.status === statusFilter;
+                statusFilter === "All" ||
+                item.status.toUpperCase() === statusFilter.toUpperCase();
             return matchesSearch && matchesStatus;
         });
     }, [items, searchTerm, statusFilter]);
@@ -186,7 +151,7 @@ export default function FeedbackList() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search feedback..."
+                            placeholder="Search workflow or rationale..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
@@ -200,7 +165,7 @@ export default function FeedbackList() {
                 {/* Filter Tabs */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
                     <Filter className="w-4 h-4 text-gray-400 mr-2 shrink-0" />
-                    {(["All", "New", "Pending", "Reviewed"] as const).map(
+                    {(["All", "NEW", "PENDING", "REVIEWED"] as const).map(
                         (status) => (
                             <button
                                 key={status}
@@ -224,11 +189,11 @@ export default function FeedbackList() {
                 {paginatedItems.length > 0 ? (
                     paginatedItems.map((item) => (
                         <FeedbackRow
-                            key={item.id}
+                            key={item.sessionId}
                             feedback={item}
-                            isOpen={openId === item.id}
-                            isDeleting={deletingIds.has(item.id)}
-                            onToggle={() => handleToggle(item.id)}
+                            isOpen={openId === item.sessionId}
+                            isDeleting={deletingIds.has(item.sessionId)}
+                            onToggle={() => handleToggle(item.sessionId)}
                             onDelete={handleDelete}
                             onUpdate={handleUpdate}
                         />

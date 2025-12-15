@@ -40,12 +40,13 @@ export default function FeedbackRow({
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const getStatusColor = (status: FeedbackItem["status"]) => {
-        switch (status) {
-            case "New":
+        const normalized = status.toUpperCase();
+        switch (normalized) {
+            case "NEW":
                 return "bg-blue-50 text-blue-700 border-blue-200";
-            case "Reviewed":
+            case "REVIEWED":
                 return "bg-green-50 text-green-700 border-green-200";
-            case "Pending":
+            case "PENDING":
                 return "bg-amber-50 text-amber-700 border-amber-200";
             default:
                 return "bg-gray-50 text-gray-700 border-gray-200";
@@ -53,13 +54,16 @@ export default function FeedbackRow({
     };
 
     const getStatusIcon = (status: FeedbackItem["status"]) => {
-        switch (status) {
-            case "New":
+        const normalized = status.toUpperCase();
+        switch (normalized) {
+            case "NEW":
                 return <AlertCircle className="w-3 h-3 mr-1" />;
-            case "Reviewed":
+            case "REVIEWED":
                 return <CheckCircle2 className="w-3 h-3 mr-1" />;
-            case "Pending":
+            case "PENDING":
                 return <Clock className="w-3 h-3 mr-1" />;
+            default:
+                return null;
         }
     };
 
@@ -76,7 +80,7 @@ export default function FeedbackRow({
 
     const confirmDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        onDelete(feedback.id);
+        onDelete(feedback.sessionId);
     };
 
     const cancelDelete = (e: React.MouseEvent) => {
@@ -85,7 +89,7 @@ export default function FeedbackRow({
     };
 
     const handleSave = async (updates: Partial<FeedbackItem>) => {
-        await onUpdate(feedback.id, updates);
+        await onUpdate(feedback.sessionId, updates);
         setIsEditing(false);
         toast.success("Feedback updated correctly");
     };
@@ -115,17 +119,26 @@ export default function FeedbackRow({
                             )}
                         >
                             {getStatusIcon(feedback.status)}
-                            {feedback.status}
+                            {feedback.status.toUpperCase()}
                         </span>
-                        <span className="text-xs text-gray-500 flex items-center">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {feedback.date}
-                        </span>
+                        {feedback.date && (
+                            <span className="text-xs text-gray-500 flex items-center">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                {feedback.date}
+                            </span>
+                        )}
                     </div>
 
                     <h3 className="text-base font-semibold text-gray-900 truncate mb-1 group-hover:text-indigo-600 transition-colors">
-                        {feedback.feedbackSummary}
+                        {feedback.workflowName}
                     </h3>
+                    {/* Rationale Display */}
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                        <span className="font-medium text-gray-700">
+                            Rationale:{" "}
+                        </span>
+                        {feedback.rationale}
+                    </p>
                 </div>
 
                 {/* Right Section: Actions */}
@@ -206,11 +219,12 @@ export default function FeedbackRow({
                                     Detailed Feedback
                                 </h4>
                                 <p className="leading-relaxed whitespace-pre-wrap">
-                                    {feedback.feedbackDetails}
+                                    {feedback.feedbackMessage ||
+                                        "No detailed feedback provided."}
                                 </p>
                             </div>
 
-                            {feedback.attachmentUrl && (
+                            {feedback.feedbackData && (
                                 <div>
                                     <h4 className="font-semibold text-gray-900 mb-2">
                                         Attachments
@@ -221,7 +235,7 @@ export default function FeedbackRow({
                                     >
                                         <FileText className="w-4 h-4 text-gray-400 group-hover/file:text-indigo-500" />
                                         <span className="font-medium">
-                                            Attached Document
+                                            view attachment
                                         </span>
                                     </a>
                                 </div>

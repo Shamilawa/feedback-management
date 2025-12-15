@@ -14,7 +14,7 @@ export default function EditFeedbackForm({
     onSave,
     onCancel,
 }: EditFeedbackFormProps) {
-    const [content, setContent] = useState(feedback.feedbackDetails);
+    const [content, setContent] = useState(feedback.feedbackMessage || "");
     const [file, setFile] = useState<File | null>(null);
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -46,10 +46,10 @@ export default function EditFeedbackForm({
         e.preventDefault();
         // Simulate upload and save
         onSave({
-            feedbackDetails: content,
-            attachmentUrl: file
+            feedbackMessage: content,
+            feedbackData: file
                 ? URL.createObjectURL(file)
-                : feedback.attachmentUrl,
+                : feedback.feedbackData,
         });
     };
 
