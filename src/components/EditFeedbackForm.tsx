@@ -16,7 +16,7 @@ export default function EditFeedbackForm({
 }: EditFeedbackFormProps) {
     const [content, setContent] = useState(feedback.feedbackMessage || "");
     const [file, setFile] = useState<File | null>(null);
-    const [existingFile, setExistingFile] = useState(!!feedback.feedbackFile);
+    const [existingFile, setExistingFile] = useState(!!feedback.file);
     const [isDragOver, setIsDragOver] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -104,12 +104,12 @@ export default function EditFeedbackForm({
                 return;
             }
         } else if (existingFile) {
-            base64File = feedback.feedbackFile;
+            base64File = feedback.file;
         }
 
         onSave({
             feedbackMessage: content,
-            feedbackFile: base64File,
+            file: base64File,
         });
     };
 

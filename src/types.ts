@@ -12,11 +12,21 @@ export interface FeedbackAttributes {
 export interface FeedbackItem {
     sessionId: string;
     workflowName: string;
-    rationale: string;
-    feedbackAttributes?: FeedbackAttributes;
-    status: "PENDING" | "REVIEWED" | "NEW" | "Pending" | "Reviewed" | "New";
+    feedbackRequestReason?: string; // New top-level field
+    rationale: string | null;
+    status: string; // "PENDING", "COMPLETED", etc.
     feedbackMessage: string | null;
-    feedbackData: string | null;
-    feedbackFile: string | null;
+    feedbackAttributes?: {
+        tags?: string[];
+        feedback_request_reason?: string;
+        [key: string]: any;
+    };
+    feedbackData?: {
+        rating?: number;
+        category?: string;
+        [key: string]: any;
+    };
+    file: string | null;
+    metadata?: any; // New field
     date?: string;
 }

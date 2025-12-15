@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import {
     Search,
-    Filter,
     ChevronLeft,
     ChevronRight,
     Loader2,
@@ -91,9 +90,12 @@ export default function FeedbackList() {
                 item.workflowName
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                item.rationale.toLowerCase().includes(searchTerm.toLowerCase());
+                (item.rationale &&
+                    item.rationale
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()));
             const matchesStatus =
-                statusFilter === "All" ||
+                statusFilter === "ALL" ||
                 item.status.toUpperCase() === statusFilter.toUpperCase();
             return matchesSearch && matchesStatus;
         });
@@ -139,7 +141,7 @@ export default function FeedbackList() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+        <div className="max-w-full mx-auto space-y-6 animate-in fade-in duration-500">
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 {/* Search and Total Count */}
@@ -161,53 +163,106 @@ export default function FeedbackList() {
 
                 {/* Filter Tabs */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
-                    <Filter className="w-4 h-4 text-gray-400 mr-2 shrink-0" />
-                    {(["All", "NEW", "PENDING", "REVIEWED"] as const).map(
-                        (status) => (
+                    {/* Status Filter */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                        {["ALL", "PENDING", "COMPLETED"].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap",
+                                    "px-4 py-2 text-sm font-medium rounded-md transition-all",
                                     statusFilter === status
-                                        ? "bg-indigo-600 text-white shadow-sm"
-                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
                                 )}
                             >
-                                {status}
+                                {status.charAt(0) +
+                                    status.slice(1).toLowerCase()}
                             </button>
-                        )
-                    )}
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* List */}
-            <div className="flex flex-col gap-3 min-h-[400px]">
-                {paginatedItems.length > 0 ? (
-                    paginatedItems.map((item) => (
-                        <FeedbackRow
-                            key={item.sessionId}
-                            feedback={item}
-                            isOpen={openId === item.sessionId}
-                            isDeleting={deletingIds.has(item.sessionId)}
-                            onToggle={() => handleToggle(item.sessionId)}
-                            onDelete={handleDelete}
-                            onUpdate={handleUpdate}
-                        />
-                    ))
-                ) : (
-                    <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
-                        <div className="mx-auto w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                            <Search className="w-5 h-5 text-gray-400" />
-                        </div>
-                        <h3 className="text-gray-900 font-medium mb-1">
-                            No matching feedback
-                        </h3>
-                        <p className="text-gray-500 text-sm">
-                            Try adjusting your filters or search terms.
-                        </p>
-                    </div>
-                )}
+            {/* Table View */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[40%] min-w-[250px]"
+                                >
+                                    Request Reason
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                >
+                                    Applicable Criteria/Tags
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                >
+                                    Attachments
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-16"
+                                >
+                                    Edit
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-16"
+                                >
+                                    Delete
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {paginatedItems.length > 0 ? (
+                                paginatedItems.map((item) => (
+                                    <FeedbackRow
+                                        key={item.sessionId}
+                                        feedback={item}
+                                        isOpen={openId === item.sessionId}
+                                        isDeleting={deletingIds.has(
+                                            item.sessionId
+                                        )}
+                                        onToggle={() =>
+                                            handleToggle(item.sessionId)
+                                        }
+                                        onDelete={handleDelete}
+                                        onUpdate={handleUpdate}
+                                    />
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={5}
+                                        className="px-6 py-12 text-center"
+                                    >
+                                        <div className="flex flex-col items-center justify-center">
+                                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                                                <Search className="w-5 h-5 text-gray-400" />
+                                            </div>
+                                            <h3 className="text-gray-900 font-medium mb-1">
+                                                No matching feedback
+                                            </h3>
+                                            <p className="text-gray-500 text-sm">
+                                                Try adjusting your filters or
+                                                search terms.
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Pagination Controls */}

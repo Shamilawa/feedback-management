@@ -7,13 +7,7 @@ function App() {
         <div className="min-h-screen bg-gray-50">
             <Toaster position="top-center" richColors />
             <Header />
-            <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                {/* Page Title Section */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                        Dashboard
-                    </h2>
-                </div>
+            <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <FeedbackList />
             </div>
         </div>
