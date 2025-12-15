@@ -1,4 +1,4 @@
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, User } from "lucide-react";
 
 export default function Header() {
     return (
@@ -15,8 +15,8 @@ export default function Header() {
                     </div>
                     <div className="flex items-center gap-4">
                         {/* Placeholder for user profile or settings */}
-                        <div className="h-8 w-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
-                            JD
+                        <div className="h-8 w-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                            <User className="h-4 w-4" />
                         </div>
                     </div>
                 </div>
