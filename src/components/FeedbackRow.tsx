@@ -8,6 +8,9 @@ import {
     Lightbulb,
     GitFork,
     Tags,
+    List,
+    ChevronDown,
+    ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FeedbackItem } from "../types";
@@ -37,6 +40,7 @@ export default function FeedbackRow({
 }: FeedbackRowProps) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showAllAttributes, setShowAllAttributes] = useState(false);
 
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -352,6 +356,83 @@ export default function FeedbackRow({
                                     </div>
                                 </section>
                             </div>
+
+                            {/* Feedback Attributes */}
+                            <section className="pt-4 border-t border-gray-200">
+                                <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                    <List className="w-4 h-4" />
+                                    <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                        Feedback Attributes
+                                    </h4>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    {feedback.feedbackAttributes &&
+                                    Object.keys(feedback.feedbackAttributes)
+                                        .length > 0 ? (
+                                        <>
+                                            <div className="flex flex-wrap gap-2">
+                                                {Object.entries(
+                                                    feedback.feedbackAttributes
+                                                )
+                                                    .slice(
+                                                        0,
+                                                        showAllAttributes
+                                                            ? undefined
+                                                            : 6
+                                                    )
+                                                    .map(([key, value]) => (
+                                                        <span
+                                                            key={key}
+                                                            className="inline-flex flex-col sm:flex-row sm:items-baseline gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 max-w-full"
+                                                        >
+                                                            <span className="font-bold text-gray-900 shrink-0">
+                                                                {key}:
+                                                            </span>
+                                                            <span className="break-words whitespace-pre-wrap min-w-0">
+                                                                {String(value)}
+                                                            </span>
+                                                        </span>
+                                                    ))}
+                                            </div>
+                                            {Object.keys(
+                                                feedback.feedbackAttributes
+                                            ).length > 6 && (
+                                                <button
+                                                    onClick={() =>
+                                                        setShowAllAttributes(
+                                                            !showAllAttributes
+                                                        )
+                                                    }
+                                                    className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700 mt-1 self-start transition-colors"
+                                                >
+                                                    {showAllAttributes ? (
+                                                        <>
+                                                            Show less
+                                                            <ChevronUp className="w-3 h-3" />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Show all (
+                                                            {
+                                                                Object.keys(
+                                                                    feedback.feedbackAttributes
+                                                                ).length
+                                                            }
+                                                            )
+                                                            <ChevronDown className="w-3 h-3" />
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <span className="text-sm text-gray-400 italic">
+                                            No feedback attributes associated
+                                        </span>
+                                    )}
+                                </div>
+                            </section>
                         </div>
                     </td>
                 </tr>

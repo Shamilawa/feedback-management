@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Upload, FileText, Loader2, AlignLeft } from "lucide-react";
+import {
+    Upload,
+    FileText,
+    Loader2,
+    AlignLeft,
+    List,
+    ChevronDown,
+    ChevronRight,
+} from "lucide-react";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
@@ -29,6 +37,7 @@ export default function EditFeedbackForm({
     const [isDragOver, setIsDragOver] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
+    const [isAttributesExpanded, setIsAttributesExpanded] = useState(false);
 
     const validateFile = (file: File): boolean => {
         // Check for Excel mime types or extension
@@ -199,6 +208,62 @@ export default function EditFeedbackForm({
                         </div>
                     </div>
                 )}
+
+                {/* Feedback Attributes (Collapsible) */}
+                {feedback.feedbackAttributes &&
+                    Object.keys(feedback.feedbackAttributes).length > 0 && (
+                        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setIsAttributesExpanded(
+                                        !isAttributesExpanded
+                                    )
+                                }
+                                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                            >
+                                <div className="flex items-center gap-2 text-gray-700">
+                                    <List className="w-4 h-4" />
+                                    <span className="text-xs font-semibold uppercase tracking-wider">
+                                        Feedback Attributes (
+                                        {
+                                            Object.keys(
+                                                feedback.feedbackAttributes
+                                            ).length
+                                        }
+                                        )
+                                    </span>
+                                </div>
+                                {isAttributesExpanded ? (
+                                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                                ) : (
+                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                )}
+                            </button>
+
+                            {isAttributesExpanded && (
+                                <div className="p-3 border-t border-gray-200 animate-in slide-in-from-top-1 duration-200">
+                                    <div className="flex flex-wrap gap-2">
+                                        {Object.entries(
+                                            feedback.feedbackAttributes
+                                        ).map(([key, value]) => (
+                                            <span
+                                                key={key}
+                                                className="inline-flex flex-col sm:flex-row sm:items-baseline gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 max-w-full"
+                                            >
+                                                <span className="font-bold text-gray-900 shrink-0">
+                                                    {key}:
+                                                </span>
+                                                <span className="break-words whitespace-pre-wrap min-w-0">
+                                                    {String(value)}
+                                                </span>
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                 {/* Feedback Content */}
                 <div>
