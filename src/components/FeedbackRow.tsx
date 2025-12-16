@@ -210,7 +210,7 @@ export default function FeedbackRow({
                                 <div className="flex items-center gap-2 mb-3 text-gray-500">
                                     <AlignLeft className="w-4 h-4" />
                                     <h4 className="text-xs font-semibold uppercase tracking-wider">
-                                        Full Request Reason
+                                        AI Agents Problem
                                     </h4>
                                 </div>
                                 <div className="bg-white p-4 border border-gray-200 rounded-lg">

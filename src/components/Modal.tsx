@@ -48,7 +48,7 @@ export default function Modal({
         >
             <div
                 className={cn(
-                    "bg-white rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200",
+                    "bg-white rounded-xl shadow-xl w-full max-w-2xl flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200",
                     className
                 )}
             >

@@ -180,7 +180,7 @@ export default function EditFeedbackForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className="p-6 bg-gray-50/50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200"
+            className=" p-6 bg-gray-50/50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200"
         >
             <div className="space-y-6">
                 {/* Request Reason (Read-only) */}
@@ -189,7 +189,7 @@ export default function EditFeedbackForm({
                         <div className="flex items-center gap-2 mb-2">
                             <AlignLeft className="w-4 h-4 text-blue-900" />
                             <h3 className="text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                Request Reason
+                                AI Agents Problem
                             </h3>
                         </div>
                         <div className="max-h-32 overflow-y-auto custom-scrollbar pr-2">
