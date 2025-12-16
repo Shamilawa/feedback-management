@@ -71,13 +71,17 @@ export default function FeedbackRow({
             <tr
                 onClick={onToggle}
                 className={cn(
-                    "group cursor-pointer hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-0",
-                    isOpen && "bg-gray-50",
+                    "group cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 relative",
+                    isOpen && "bg-indigo-50/30 shadow-sm",
                     isDeleting && "opacity-0 scale-95"
                 )}
             >
                 {/* 1. Request Reason */}
-                <td className="px-6 py-4 align-top py-5">
+                <td className="px-6 py-4 align-top py-5 relative">
+                    {/* Active State Indicator */}
+                    {isOpen && (
+                        <span className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 block rounded-r-sm" />
+                    )}
                     <div className="flex gap-3">
                         <div
                             className={cn(
@@ -195,7 +199,7 @@ export default function FeedbackRow({
 
             {/* Expanded Content Row */}
             {isOpen && (
-                <tr className="bg-gray-50/25">
+                <tr className="bg-indigo-50/30">
                     <td
                         colSpan={5}
                         className="px-8 py-0 border-b border-gray-200"
