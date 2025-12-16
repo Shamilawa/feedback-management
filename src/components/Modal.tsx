@@ -48,11 +48,11 @@ export default function Modal({
         >
             <div
                 className={cn(
-                    "bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200",
+                    "bg-white rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200",
                     className
                 )}
             >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
                     <h3 className="text-lg font-semibold text-gray-900">
                         {title}
                     </h3>
@@ -63,7 +63,9 @@ export default function Modal({
                         <X className="w-5 h-5" />
                     </button>
                 </div>
-                <div>{children}</div>
+                <div className="overflow-y-auto custom-scrollbar">
+                    {children}
+                </div>
             </div>
         </div>,
         document.body

@@ -259,7 +259,7 @@ export default function FeedbackRow({
                             </div>
 
                             {/* Additional Info: Workflow & Tags */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-200">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4 border-t border-gray-200">
                                 {/* Workflow Name */}
                                 <section>
                                     <div className="flex items-center gap-2 mb-3 text-gray-500">
@@ -271,6 +271,48 @@ export default function FeedbackRow({
                                     <div className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-200">
                                         {feedback.workflowName}
                                     </div>
+                                </section>
+
+                                {/* Supported Document */}
+                                <section>
+                                    <div className="flex items-center gap-2 mb-3 text-gray-500">
+                                        <FileText className="w-4 h-4" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">
+                                            Supported Document
+                                        </h4>
+                                    </div>
+                                    {feedback.file ? (
+                                        <a
+                                            href={`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${feedback.file}`}
+                                            download={`feedback-${feedback.sessionId}.xlsx`}
+                                            className="flex items-center gap-2 max-w-[200px] text-gray-500 hover:text-indigo-600 transition-colors group/file text-left"
+                                            title="Download Excel Report"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <div className="p-2 bg-gray-100 rounded-lg text-gray-600 group-hover/file:bg-indigo-50 group-hover/file:text-indigo-600 transition-colors">
+                                                <FileText className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex flex-col overflow-hidden">
+                                                <span className="text-sm font-medium truncate w-full">
+                                                    feedback-
+                                                    {feedback.sessionId.slice(
+                                                        0,
+                                                        8
+                                                    )}
+                                                    .xlsx
+                                                </span>
+                                                <span className="text-xs text-gray-400 group-hover/file:text-indigo-500">
+                                                    Click to download
+                                                </span>
+                                            </div>
+                                        </a>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-400 bg-gray-50 rounded-md border border-gray-100 cursor-not-allowed select-none">
+                                            <span className="text-xs font-medium">
+                                                None
+                                            </span>
+                                        </span>
+                                    )}
                                 </section>
 
                                 {/* Tags */}

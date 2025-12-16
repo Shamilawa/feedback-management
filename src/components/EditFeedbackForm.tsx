@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, AlignLeft } from "lucide-react";
 import { FeedbackItem } from "../types";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
@@ -183,6 +183,23 @@ export default function EditFeedbackForm({
             className="p-6 bg-gray-50/50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200"
         >
             <div className="space-y-6">
+                {/* Request Reason (Read-only) */}
+                {feedback.feedbackRequestReason && (
+                    <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 mb-2">
+                        <div className="flex items-center gap-2 mb-2">
+                            <AlignLeft className="w-4 h-4 text-blue-900" />
+                            <h3 className="text-xs font-semibold text-blue-900 uppercase tracking-wider">
+                                Request Reason
+                            </h3>
+                        </div>
+                        <div className="max-h-32 overflow-y-auto custom-scrollbar pr-2">
+                            <p className="text-sm text-blue-950 font-medium leading-relaxed">
+                                {feedback.feedbackRequestReason}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Feedback Content */}
                 <div>
                     <label
@@ -206,33 +223,6 @@ export default function EditFeedbackForm({
                     {errors.feedbackMessage && (
                         <p className="text-xs text-red-600 font-medium mt-1">
                             {errors.feedbackMessage}
-                        </p>
-                    )}
-                </div>
-
-                {/* Rationale */}
-                <div>
-                    <label
-                        htmlFor="rationale"
-                        className="block text-sm font-semibold text-gray-700 mb-1"
-                    >
-                        Rationale
-                    </label>
-                    <textarea
-                        id="rationale"
-                        rows={3}
-                        className={cn(
-                            "w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow",
-                            errors.rationale &&
-                                "border-red-300 focus:border-red-500 focus:ring-red-500"
-                        )}
-                        value={rationale}
-                        onChange={(e) => setRationale(e.target.value)}
-                        placeholder="Explain the reasoning behind this feedback..."
-                    />
-                    {errors.rationale && (
-                        <p className="text-xs text-red-600 font-medium mt-1">
-                            {errors.rationale}
                         </p>
                     )}
                 </div>
@@ -314,7 +304,7 @@ export default function EditFeedbackForm({
                                             className="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                                         >
                                             <span className="p-1">
-                                                Upload Excel file
+                                                Upload file
                                             </span>
                                             <input
                                                 id="file-upload"
@@ -341,13 +331,40 @@ export default function EditFeedbackForm({
                     </div>
                 </div>
 
+                {/* Rationale */}
+                <div>
+                    <label
+                        htmlFor="rationale"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                        Rationale
+                    </label>
+                    <textarea
+                        id="rationale"
+                        rows={3}
+                        className={cn(
+                            "w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border resize-none transition-shadow",
+                            errors.rationale &&
+                                "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        )}
+                        value={rationale}
+                        onChange={(e) => setRationale(e.target.value)}
+                        placeholder="Explain the reasoning behind this feedback..."
+                    />
+                    {errors.rationale && (
+                        <p className="text-xs text-red-600 font-medium mt-1">
+                            {errors.rationale}
+                        </p>
+                    )}
+                </div>
+
                 {/* Metadata */}
                 <div>
                     <label
                         htmlFor="metadata"
                         className="block text-sm font-semibold text-gray-700 mb-1"
                     >
-                        Metadata (JSON)
+                        Applicable Criteria/Tags (JSON)
                     </label>
                     <textarea
                         id="metadata"

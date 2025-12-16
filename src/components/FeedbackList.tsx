@@ -242,7 +242,7 @@ export default function FeedbackList() {
                             <tr>
                                 <th
                                     scope="col"
-                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[60%] min-w-[250px]"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[59%] min-w-[250px]"
                                 >
                                     Request Reason
                                 </th>
@@ -254,9 +254,9 @@ export default function FeedbackList() {
                                 </th>
                                 <th
                                     scope="col"
-                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap"
                                 >
-                                    Attachments
+                                    Supported Document
                                 </th>
                                 <th
                                     scope="col"
